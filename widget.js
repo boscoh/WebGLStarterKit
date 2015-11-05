@@ -24,30 +24,28 @@ class Widget {
         this.gestureRot = 0;
         this.gestureScale = 1.0;
 
+        this.changed = false;
     }
 
 
-    bindCallbacks() {
+    bindCallbacks( dom ) {
 
-        this.bind( 'mousedown', e => this.mousedown( e ) );
-        this.bind( 'mousemove', e => this.mousemove( e ) );
-        this.bind( 'mouseup', e => this.mouseup( e ) );
-        this.bind( 'mousewheel', e => this.mousewheel( e ) );
-        this.bind( 'DOMMouseScroll', e => this.mousewheel( e ) );
-        this.bind( 'touchstart', e => this.mousedown( e ) );
-        this.bind( 'touchmove', e => this.mousemove( e ) );
-        this.bind( 'touchend', e => this.mouseup( e ) );
-        this.bind( 'touchcancel', e => this.mouseup( e ) );
-        this.bind( 'gesturestart', e => this.gesturestart( e ) );
-        this.bind( 'gesturechange', e => this.gesturechange( e ) );
-        this.bind( 'gestureend', e => this.gestureend( e ) );
+        var bind = ( eventType, callback ) => {
+            dom.addEventListener( eventType, callback );
+        }
 
-    }
-
-
-    bind( eventType, callback ) {
-
-        this.divDom.addEventListener( eventType, callback );
+        bind( 'mousedown', e => this.mousedown( e ) );
+        bind( 'mousemove', e => this.mousemove( e ) );
+        bind( 'mouseup', e => this.mouseup( e ) );
+        bind( 'mousewheel', e => this.mousewheel( e ) );
+        bind( 'DOMMouseScroll', e => this.mousewheel( e ) );
+        bind( 'touchstart', e => this.mousedown( e ) );
+        bind( 'touchmove', e => this.mousemove( e ) );
+        bind( 'touchend', e => this.mouseup( e ) );
+        bind( 'touchcancel', e => this.mouseup( e ) );
+        bind( 'gesturestart', e => this.gesturestart( e ) );
+        bind( 'gesturechange', e => this.gesturechange( e ) );
+        bind( 'gestureend', e => this.gestureend( e ) );
 
     }
 
@@ -255,8 +253,61 @@ class Widget {
 
     gesturedrag( rot, scale ) { }
 
+    draw() {}
+
+    isChanged() { return this.changed }
+
+    animate() {}
 
 }
+
+
+
+// This is a separate file to allow multiple jolecule
+// widgets to be animated in the same global event loop.
+
+function registerWidgetForAnimation(widget) {
+
+  var msPerStep = 25;
+
+  var loop = function() {
+
+    requestAnimationFrame( loop );
+
+    if (window.animationWidgets == []) {
+      return;
+    }
+    var currTime = (new Date).getTime();
+    var elapsedTime = currTime - window.lastAnimationTime;
+    var nStep = (elapsedTime)/msPerStep;
+    if (nStep < 1) {
+      nStep = 1;
+    }
+    nStep = Math.floor(nStep);
+    for (var i=0; i<nStep; i++) {
+      for (var j=0; j<window.animationWidgets.length; j++) {
+        window.animationWidgets[j].animate();
+      }
+    }
+    for (var j=0; j<window.animationWidgets.length; j++) {
+      var display = window.animationWidgets[j];
+      if (display.isChanged()) {
+        display.draw();
+      }
+    }
+    window.lastAnimationTime = currTime;
+  }
+
+  if (typeof window.animationWidgets == 'undefined') {
+    window.animationWidgets = []
+    window.lastAnimationTime = (new Date).getTime();
+    loop();
+  }
+
+  window.animationWidgets.push(widget);
+}
+
+
 
 
 class WebGlWidget extends Widget {
@@ -319,7 +370,7 @@ class WebGlWidget extends Widget {
         this.clickedMesh = null;
         this.raycaster = new THREE.Raycaster();
 
-        this.bindCallbacks();
+        this.bindCallbacks( this.threeDom );
 
     }
 
@@ -415,20 +466,21 @@ class WebGlWidget extends Widget {
         }
 
 
-        this.draw();
+        this.changed = true;
 
     }
 
 
-    calcScreenXYOfPos( pos ) {
+    calcScreenXYOfPos( obj ) {
 
         var widthHalf = 0.5 * this.width();
         var heightHalf = 0.5 * this.height();
 
-        var vector = this.projector.projectVector(
-            pos.clone(), this.camera );
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition( obj.matrixWorld );
+        vector.project( this.camera );
 
-        return new Three.Vector2()
+        return new THREE.Vector2()
             .set(
                  ( vector.x * widthHalf )  + widthHalf,
                 -( vector.y * heightHalf ) + heightHalf
@@ -551,6 +603,6 @@ class WebGlWidget extends Widget {
 
 
 
-module.exports = { Widget, WebGlWidget }
+module.exports = { Widget, WebGlWidget, registerWidgetForAnimation }
 
 
