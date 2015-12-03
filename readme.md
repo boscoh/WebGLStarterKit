@@ -28,6 +28,44 @@ So to help you get started, we've wrapped up all these functions in a helpful `W
 Get started straight away!
 
 
+# Typical workflow
+
+First you want to sub-class `WebGlWidget`:
+
+    class MyWidget extends WebGLWidget {
+
+    }
+
+Then you build your `Three.js` objects in the constructor, and add to `this.scene`
+
+Mess around with the lights if you want, or use the defaults.
+
+Then instantiate your class, and attach it to the DOM:
+
+    var myWidget = MyWidget('#widget')
+
+Make sure your page has a `<div>` with that id. If not, build with `jquery`:
+
+    import $ from "jquery"
+
+    $('body').append('<div id="widget"></div>')
+
+Attach the resize function to the window.
+
+    $(window).resize( myWidget.resize )
+
+Then do first draw:
+
+    myWidget.draw()
+
+And now attach to the animation loop:
+
+    registerWidgetForAnimation( myWidget )
+
+Now we're done. Messages will be sent to the `this.animate` and all the input functions.
+
+
+
 # WebGlWidget class
 
 Constructor
