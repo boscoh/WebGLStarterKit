@@ -5,6 +5,12 @@ var _ = require("underscore");
 var THREE = require("three");
 
 
+////////////////////////////////////////////////////////////////////
+// A Base Widget Class to wrap <div>'s in the DOM
+// bind callbacks and handle mouse/touch input
+// Also contains a resize, animate and draw functionality
+// for tying together animation loops
+////////////////////////////////////////////////////////////////////
 
 class Widget {
 
@@ -24,7 +30,7 @@ class Widget {
         this.gestureRot = 0;
         this.gestureScale = 1.0;
 
-        this.changed = false;
+        this.isChanged = false;
     }
 
 
@@ -119,13 +125,13 @@ class Widget {
 
         event.preventDefault();
 
-        this.mouseclick ( event );
+        this.mouseclick ( this.pointerX, this.pointerY );
 
         var now = ( new Date ).getTime();
 
         var isDoubleClick = ( now - this.timeLastPressed ) < 500;
         if ( isDoubleClick ) {
-            this.mousedoubleclick( event ); 
+            this.mousedoubleclick( this.pointerX, this.pointerY ); 
         };
 
         this.timeLastPressed = now;
@@ -243,9 +249,9 @@ class Widget {
 
     mousescroll( wheel ) { }
 
-    mouseclick( event ) { }
+    mouseclick( x, y ) { }
 
-    mousedoubleclick( event ) { }
+    mousedoubleclick( x, y ) { }
 
     leftmousedrag( x0, y0, x1, y1 ) { }
 
@@ -255,60 +261,60 @@ class Widget {
 
     draw() {}
 
-    isChanged() { return this.changed }
-
-    animate() {}
+    animate( elapsedTime ) {}
 
 }
 
 
-
-// This is a separate file to allow multiple jolecule
-// widgets to be animated in the same global event loop.
+////////////////////////////////////////////////////////////////////
+// A global animation loop manager, requires objects with the
+// interface:
+// - .animate( timeElapsed )
+// - .isChanged
+// - .draw()
+////////////////////////////////////////////////////////////////////
 
 function registerWidgetForAnimation(widget) {
 
-  var msPerStep = 25;
-
-  var loop = function() {
-
-    requestAnimationFrame( loop );
-
-    if (window.animationWidgets == []) {
-      return;
+    var loop = function() {
+  
+        requestAnimationFrame( loop );
+    
+        if (window.animationWidgets.length == 0 ) {
+            return;
+        }
+    
+        var currTime = (new Date).getTime();
+        var elapsedTime = currTime - window.lastAnimationTime;
+        for (let widget of window.animationWidgets) {
+            widget.animate( elapsedTime );
+        }
+        window.lastAnimationTime = currTime;
+    
+        for (let widget of window.animationWidgets) {
+            if (widget.isChanged) {
+                widget.draw();
+            }
+        }
+  
     }
-    var currTime = (new Date).getTime();
-    var elapsedTime = currTime - window.lastAnimationTime;
-    var nStep = (elapsedTime)/msPerStep;
-    if (nStep < 1) {
-      nStep = 1;
+  
+    if (typeof window.animationWidgets == 'undefined') {
+        window.animationWidgets = []
+        window.lastAnimationTime = (new Date).getTime();
+        loop();
     }
-    nStep = Math.floor(nStep);
-    for (var i=0; i<nStep; i++) {
-      for (var j=0; j<window.animationWidgets.length; j++) {
-        window.animationWidgets[j].animate();
-      }
-    }
-    for (var j=0; j<window.animationWidgets.length; j++) {
-      var display = window.animationWidgets[j];
-      if (display.isChanged()) {
-        display.draw();
-      }
-    }
-    window.lastAnimationTime = currTime;
-  }
-
-  if (typeof window.animationWidgets == 'undefined') {
-    window.animationWidgets = []
-    window.lastAnimationTime = (new Date).getTime();
-    loop();
-  }
-
-  window.animationWidgets.push(widget);
+  
+    window.animationWidgets.push(widget);
 }
 
 
 
+////////////////////////////////////////////////////////////////////
+// A Starter WebGLWidget to embed in a <div> determined by selector
+// Subclass this! Add models and controllers, override 
+// input functions, and WebGL construction 
+////////////////////////////////////////////////////////////////////
 
 class WebGlWidget extends Widget {
 
@@ -329,10 +335,10 @@ class WebGlWidget extends Widget {
 
 
         // now create scene
-        this.threeScene = new THREE.Scene();
-        this.threeScene.fog = new THREE.Fog( this.backgroundColor, 1, 100 );
-        this.threeScene.fog.near = this.zoom + 1;
-        this.threeScene.fog.far = this.zoom + this.zBack;
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.Fog( this.backgroundColor, 1, 100 );
+        this.scene.fog.near = this.zoom + 1;
+        this.scene.fog.far = this.zoom + this.zBack;
 
 
 
@@ -340,7 +346,7 @@ class WebGlWidget extends Widget {
         this.lights = [];
         this.setLights();
         for ( let light of this.lights ) {
-            this.threeScene.add( light );
+            this.scene.add( light );
         }
 
 
@@ -353,40 +359,34 @@ class WebGlWidget extends Widget {
 
         this.camera.position
             .set( 0, 0, this.zoom )
-            .add( this.threeScene.position );
+            .add( this.scene.position );
 
-        this.camera.lookAt( this.threeScene.position );
+        this.camera.lookAt( this.scene.position );
 
 
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setClearColor( this.backgroundColor );
         this.renderer.setSize( this.width(), this.height() );
 
-        this.threeDom = this.renderer.domElement;
-        this.divDom.appendChild( this.threeDom );
+        this.renderDom = this.renderer.domElement;
+        this.divDom.appendChild( this.renderDom );
 
         // stores any meshes that can be clicked
         this.clickableMeshes = [];
         this.clickedMesh = null;
         this.raycaster = new THREE.Raycaster();
 
-        this.bindCallbacks( this.threeDom );
+        this.bindCallbacks( this.renderDom );
 
     }
 
-
-    bind( eventType, callback ) {
-
-        this.threeDom.addEventListener( eventType, callback );
-
-    }
 
     resize() {
 
         this.camera.aspect = this.width() / this.height();
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( this.width(), this.height() );
-
+        this.isChanged = true;
     }
 
 
@@ -404,22 +404,69 @@ class WebGlWidget extends Widget {
 
     draw() {
 
-        this.renderer.render( this.threeScene, this.camera );
+        this.renderer.render( this.scene, this.camera );
 
     }
 
 
-    animate() {
+    animate( elapsedTime ) {
+
+        var msPerStep = 25;
+
+        var nStep = (elapsedTime)/msPerStep;
+        if (nStep < 1) {
+          nStep = 1;
+        }
+        nStep = Math.floor(nStep);
+        for (var i=0; i<nStep; i++) {
+        }
 
     }
 
 
-    adjustCamera ( xRotAngle, yRotAngle, zRotAngle, zoomRatio ) {
+    getSceneRadius() {
+
+        var sceneRadius = 0.0;
+
+        this.scene.traverse ((object) =>
+        {
+            if (object instanceof THREE.Mesh)
+            {
+                var objectCenter = object.position.clone();
+                objectCenter.applyMatrix4( object.matrixWorld );
+
+                var dCenter = this.scene.position.distanceTo(
+                    objectCenter);
+
+                object.geometry.computeBoundingSphere();
+                var objectRadius = 
+                    dCenter + object.geometry.boundingSphere.radius;
+
+                sceneRadius = Math.max(objectRadius, sceneRadius);
+            }
+        });       
+
+        return sceneRadius;
+
+    }
+
+
+    fitCameraToShowAll() {
+
+        var sceneRadius = this.getSceneRadius();
+        this.changeZoom(2*sceneRadius);
+        this.near = 0;
+        this.far = sceneRadius;
+
+    }
+
+
+    rotateCamera ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true ) {
 
         var y = this.camera.up;
 
         var cameraDiff = this.camera.position.clone()
-            .sub( this.threeScene.position );
+            .sub( this.scene.position );
 
         this.zoom = cameraDiff.length();
 
@@ -443,30 +490,58 @@ class WebGlWidget extends Widget {
             .multiply( rotY )
             .multiply( rotX );
 
-        var newZoom = zoomRatio * this.zoom;
-
-        if ( newZoom < 2 ) {
-            newZoom = 2;
-        }
-
         this.camera.position
-            .sub( this.threeScene.position )
+            .sub( this.scene.position )
             .applyQuaternion( rotation )
             .normalize()
-            .multiplyScalar( newZoom )
-            .add( this.threeScene.position );
+            .multiplyScalar( this.zoom )
+            .add( this.scene.position );
 
-        this.camera.lookAt( this.threeScene.position );
+        this.camera.lookAt( this.scene.position );
 
         this.camera.up.applyQuaternion( rotation );
 
-
-        for ( let light of this.lights ) {
-            light.position.applyQuaternion( rotation );
+        if ( isRotateLights ) {
+            for ( let light of this.lights ) {
+                light.position.applyQuaternion( rotation );
+            }
         }
 
 
-        this.changed = true;
+        this.isChanged = true;
+
+    }
+
+
+    changeZoom ( newZoom ) {
+
+        this.camera.position
+            .sub( this.scene.position )
+            .normalize()
+            .multiplyScalar( newZoom )
+            .add( this.scene.position );
+
+        this.zoom = newZoom;
+
+        this.camera.lookAt( this.scene.position );
+
+        this.isChanged = true;
+
+    }
+
+
+    getDepth( pos ) {
+
+        var origin = this.scene.position;
+
+        var cameraDir = origin.clone()
+            .sub( this.camera.position )
+            .normalize();
+
+        var posRelativeToOrigin = pos.clone()
+            .sub( origin );
+
+        return posRelativeToOrigin.dot( cameraDir );
 
     }
 
@@ -489,9 +564,7 @@ class WebGlWidget extends Widget {
     }
 
 
-    getClickedMeshes( event ) {
-
-        this.calcPointerXY( event );
+    getClickedMeshes() {
 
         var screenXY = new THREE.Vector2()
             .set(
@@ -508,11 +581,10 @@ class WebGlWidget extends Widget {
 
     leftmousedrag( x0, y0, x1, y1 ) {
 
-        this.adjustCamera(
+        this.rotateCamera(
             this.degToRad( y1 - y0 ), 
             this.degToRad( x1 - x0 ),
-            0, 
-            1 );
+            0)
 
     }
 
@@ -545,11 +617,7 @@ class WebGlWidget extends Widget {
             ratio = r0/r1;
         }
 
-        this.adjustCamera(
-            0,
-            0, 
-            t1 - t0,
-            ratio );
+        this.changeZoom( this.zoom * ratio );
    
     }
 
@@ -564,18 +632,15 @@ class WebGlWidget extends Widget {
     mousescroll( wheel ) {
 
         var ratio = Math.pow(1 + Math.abs(wheel)/2 , wheel > 0 ? 1 : -1);
-        this.adjustCamera( 0, 0, 0, ratio );
+        this.changeZoom( this.zoom * ratio );
 
     }
 
 
     gesturedrag( rotDiff, ratio ){
 
-        this.adjustCamera(
-            0,
-            0,
-            this.degToRad( rotDiff*2 ),
-            ratio*ratio );
+        this.rotateCamera( 0, 0, this.degToRad( rotDiff*2 ) );
+        this.changeZoom( this.zoom * ratio*ratio );
 
     }
 
@@ -602,7 +667,112 @@ class WebGlWidget extends Widget {
 }
 
 
+////////////////////////////////////////////////////////////////////
+// PopupText
+////////////////////////////////////////////////////////////////////
 
-module.exports = { Widget, WebGlWidget, registerWidgetForAnimation }
+class PopupText {
+
+    constructor( selector, backgroundColor='white', textColor='black', opacity=0.7 ) {
+
+        this.textDiv = $( "<div>" )
+            .css( {
+                'position': 'absolute',
+                'top': 0,
+                'left': 0,
+                'z-index': 100,
+                'background': backgroundColor,
+                'color': textColor,
+                'padding': '5',
+                'opacity': opacity,
+                'display': 'none',
+                'pointer-events': 'none',
+            } );
+
+        this.arrowDiv = $( "<div>" )
+            .css( {
+                'position': 'absolute',
+                'top': 0,
+                'left': 0,
+                'z-index': 100,
+                'width': 0,
+                'height': 0,
+                'border-left': '5px solid transparent',
+                'border-right': '5px solid transparent',
+                'border-top': '50px solid ' + backgroundColor,
+                'opacity': opacity,
+                'display': 'none',
+                'pointer-events': 'none',
+            } );
+
+        this.mainDiv = $( selector );
+        this.mainDiv.append( this.textDiv );
+        this.mainDiv.append( this.arrowDiv );
+
+    }
+
+
+    move( x, y ) {
+
+        var mainDivPos = this.mainDiv.position();
+        var width = this.textDiv.innerWidth();
+        var height = this.textDiv.innerHeight();
+
+        if ( ( x < 0 ) || ( x > this.mainDiv.width() ) || ( y < 0 ) ||
+            ( y > this.mainDiv.height() ) ) {
+            this.hide();
+            return;
+        }
+
+        this.textDiv.css( {
+            'top': y - height - 50 + mainDivPos.top,
+            'left': x - width / 2 + mainDivPos.left,
+            'display': 'block',
+            'font-family': 'sans-serif',
+            'cursor': 'pointer'
+        } );
+
+        this.arrowDiv.css( {
+            'top': y - 50 + mainDivPos.top,
+            'left': x - 5 + mainDivPos.left,
+            'display': 'block',
+        } );
+
+    }
+
+
+    hide() {
+
+        this.textDiv.css( 'display', 'none' );
+        this.arrowDiv.css( 'display', 'none' );
+
+    }
+
+
+    html( text ) {
+
+        this.textDiv.html( text );
+
+    }
+
+
+    remove() {
+
+        this.textDiv.remove();
+        this.arrowDiv.remove();
+
+    }
+
+
+}
+
+
+
+module.exports = { 
+    Widget, 
+    WebGlWidget, 
+    PopupText,
+    registerWidgetForAnimation 
+}
 
 
