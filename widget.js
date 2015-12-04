@@ -378,6 +378,8 @@ class WebGlWidget extends Widget {
 
         this.bindCallbacks( this.renderDom );
 
+        registerWidgetForAnimation( this );
+
     }
 
 

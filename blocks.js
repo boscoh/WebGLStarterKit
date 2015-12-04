@@ -1,11 +1,9 @@
 
 
+var { WebGlWidget, PopupText } = require("./widget.js");
 var THREE = require("three");
-var { WebGlWidget, PopupText, registerWidgetForAnimation } = 
-    require("./widget.js");
 
 
-// MyWebGlWidget
 class MyWebGlWidget extends WebGlWidget {
 
     constructor( selector ) {
@@ -95,11 +93,8 @@ class MyWebGlWidget extends WebGlWidget {
 }
 
 
-// Entry point
 
 var widget = new MyWebGlWidget('#widget');
-console.log( 'noway' );
-registerWidgetForAnimation( widget );
 
 window.onresize = () => widget.resize();
 
