@@ -1,9 +1,7 @@
 
 
-import $ from "jquery";
 import THREE from "three";
-import { WebGlWidget, registerWidgetForAnimation } 
-    from "./widget.js";
+import { WebGlWidget } from "./webglstarterkit.js";
 
 
 class MyWebGlWidget extends WebGlWidget {
@@ -31,18 +29,17 @@ class MyWebGlWidget extends WebGlWidget {
     }
 
     animate( timeElapsed ) { 
+
         this.rotateCamera(0, this.rotateAngPerStep, 0); 
+
     }
 
 }
 
 
-$("body").append(
-    `<div id="widget" style="width:85%; height:500px; overflow:hidden">`)
-
 var widget = new MyWebGlWidget('#widget');
+
 window.onresize = () => widget.resize();
-widget.draw();
 
 
 

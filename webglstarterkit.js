@@ -318,7 +318,7 @@ function registerWidgetForAnimation(widget) {
 
 class WebGlWidget extends Widget {
 
-    constructor( selector ) {
+    constructor( selector, backgroundColor=0x000000 ) {
 
         super(selector);
 
@@ -331,7 +331,7 @@ class WebGlWidget extends Widget {
         this.zBack = 5000;
 
 
-        this.backgroundColor = 0x000000
+        this.backgroundColor = backgroundColor
 
 
         // now create scene

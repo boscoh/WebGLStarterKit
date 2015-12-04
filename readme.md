@@ -30,75 +30,79 @@ You can override the defaults when you want to, and concentrate on building awes
 
 # Typical workflow
 
-First you want to sub-class `WebGlWidget`:
+First you want to create your webgl widget in a file `sample.js`:
 
     class MyWidget extends WebGLWidget {
 
+        constructor( selector ) {
+            super( selector );
+        }
+
+        /* make objects */
+        let newObject = /* make your own object */
+        this.scene.append( newObject )
+
+        this.fitCameraToShowAll()
     }
 
-Then you build your `Three.js` objects in the constructor, and add to `this.scene`
+If you want different lights, override it:
 
-Mess around with the lights if you want, or use the defaults.
+    setLights() {
+        let newLight = /* make your own */
+        this.lights.append(newLight);
+    }
 
-Then instantiate your class, and attach it to the DOM:
+Then instantiate your class, by giving it a DOM selector
 
     var myWidget = MyWidget('#widget')
 
-Make sure your page has a `<div>` with that id. If not, build with `jquery`:
+Then use the following script to build your HTML page:
 
-    import $ from "jquery"
+    ./buildwebgl sample.js
 
-    $('body').append('<div id="widget"></div>')
+Which will build `sample.compiled.js` and `sample.html`. 
 
-Attach the resize function to the window.
+Now open `sample.html`.
 
-    $(window).resize( myWidget.resize )
 
-Then do first draw:
-
-    myWidget.draw()
-
-And now attach to the animation loop:
-
-    registerWidgetForAnimation( myWidget )
-
-Now we're done. Messages will be sent to the `this.animate` and all the input functions.
-
+# Resizing 
 
 
 # WebGlWidget class
 
 Constructor
 
+ - `constructor(selector, backgroundColor='black')`
+
 Properties:
 
- - this.backgroundColor - used to build scene and fog
- - this.scene - Three.js scene
- - this.scene.fog - Three.js fog added
- - this.lights - holds all lights, override `this.setLights` to build
- - this.camera - Three.js camera
- - this.zoom - distance between camera and `this.scene.position`
- - this.renderer - Three.js renderer
- - this.renderDom - DOM element bound to renderer
- - this.divDom - DOM element of `<div>` that contains canvas
- - this.clickableMeshes - list of all meshes for picking. Add meshes here if you want to keep track of them. You can always add properties to those meshses for further analysis
- - this.clickedMesh - top-most picked mesh [nothing picked=null]
+ - `this.backgroundColor` - used to build scene and fog
+ - `this.scene` - Three.js scene
+ - `this.scene.fog` - Three.js fog added
+ - `this.lights` - holds all lights, override `this.setLights` to build
+ - `this.camera` - Three.js camera
+ - `this.zoom` - distance between camera and `this.scene.position`
+ - `this.renderer` - Three.js renderer
+ - `this.renderDom` - DOM element bound to renderer
+ - `this.divDom` - DOM element of `<div>` that contains canvas
+ - `this.clickableMeshes` - list of all meshes for picking. Add meshes here if you want to keep track of them. You can always add properties to those meshses for further analysis
+ - `this.clickedMesh` - top-most picked mesh [nothing picked=null]
 
 Methods:
 
- - resize() - resize the renderer to fit the display and aspect ratio
- - setLights() - overrideable function to set your own lights, just push to `this.lights`
- - draw() - obvious
- - animate( elapsedTime ) - this is called every time the animation loop is called, `elapsedTime` gives the time since last call
- - getSceneRadius() - gives the bounding radius from `this.scene.position` of all the meshes in `this.scene`
- - fitCameraToShowAll() - conveniently moves `this.camera` to twice the distance of `this.getSceneRadius()`
- - rotateCamera ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true ) - rotates `this.camera` around `this.scene.position` with respect to the axes:
+ - `this.resize()` - resize the renderer to fit the display and aspect ratio
+ - `this.setLights()` - overrideable function to set your own lights, just push to `this.lights`
+ - `this.draw()` - obvious
+ - `this.animate( elapsedTime )` - this is called every time the animation loop is called, `elapsedTime` gives the time since last call
+ - `this.getSceneRadius()` - gives the bounding radius from `this.scene.position` of all the meshes in `this.scene`
+ - `this.fitCameraToShowAll()` - conveniently moves `this.camera` to twice the distance of `this.getSceneRadius()`
+ - `this.rotateCamera ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true )` - rotates `this.camera` around `this.scene.position` with respect to the axes:
      - `z` - direction of `this.camera` to center
      - `y` - direction of `this.camera.up`
      - `x` - the other orthonormal direction
- - changeZoom ( newZoom ) - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction 
- - getDepth( pos ) - converts `pos` into a depth value relative to `this.scene.position` in the camera direction. Negative are in front of `this.scene.position`. Positive values are behind.
- - getClickedMeshes() - find the `this.clickedMesh` given the current scne
+ - `this.changeZoom ( newZoom )` - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction 
+ - `this.getDepth( pos )` - converts `pos` into a depth value relative to `this.scene.position` in the camera direction. Negative are in front of `this.scene.position`. Positive values are behind.
+ - `this.getClickedMeshes()` - find the `this.clickedMesh` given the current scne
 
 Methods inherited from `Widget`:
 
