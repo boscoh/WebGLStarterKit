@@ -1,17 +1,11 @@
 
 
-var $ = require("jquery");
 var THREE = require("three");
-var _ = require("underscore");
 var { WebGlWidget, PopupText, registerWidgetForAnimation } = 
     require("./widget.js");
 
 
-
-////////////////////////////////////////////////////////////////////
 // MyWebGlWidget
-////////////////////////////////////////////////////////////////////
-
 class MyWebGlWidget extends WebGlWidget {
 
     constructor( selector ) {
@@ -92,7 +86,6 @@ class MyWebGlWidget extends WebGlWidget {
                 this.hover.hide();
 
             }
-            console.log( 'clicked object' );
         }
 
         this.isChanged = true;
@@ -102,26 +95,14 @@ class MyWebGlWidget extends WebGlWidget {
 }
 
 
-
-////////////////////////////////////////////////////////////////////
 // Entry point
-////////////////////////////////////////////////////////////////////
 
-var body = $(document.body)
-    .append(
-        $("<div>")
-            .attr("id", "widget")
-            .css({ 
-                "width": "85%", 
-                "height": "500px",
-                "overflow": "hidden"
-            } ) );
-
-console.log( 'Build WebGlWidget' );
 var widget = new MyWebGlWidget('#widget');
+console.log( 'noway' );
 registerWidgetForAnimation( widget );
+
 window.onresize = () => widget.resize();
-widget.draw();
+
 
 
 

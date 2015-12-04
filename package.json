@@ -1,0 +1,30 @@
+{
+  "name": "webglstarterkit",
+  "version": "1.0.0",
+  "description": "WebGL is freakin` awesome, and three.js makes it even more so.",
+  "main": "widget.js",
+  "bin": { "buildwebgl": "buildwebgl.js" },
+  "dependencies": {
+    "babel-preset-es2015": "^6.0.15",
+    "babelify": "^7.2.0",
+    "browserify": "^12.0.1",
+    "cheerio": "^0.19.0",
+    "jquery": "^2.1.4",
+    "three": "^0.73.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boscoh/WebGLStarterKit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boscoh/WebGLStarterKit/issues"
+  },
+  "homepage": "https://github.com/boscoh/WebGLStarterKit#readme"
+}

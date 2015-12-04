@@ -1,7 +1,7 @@
 
 # WebGL Starter Kit
 
-WebGL is freakin` awesome. And three.js makes it even easier to be awesome.
+WebGL is freakin` awesome, and three.js makes it even more so.
 
 But still, there is quite a lot to do to get something running. At the very least you need:
 
@@ -11,7 +11,7 @@ But still, there is quite a lot to do to get something running. At the very leas
 - some lights
 - an input loop
 - an animation loop
-
+- a link to the DOM
 
 Beyond that, you might want to:
 
@@ -21,11 +21,11 @@ Beyond that, you might want to:
 - draw HUD elements over screen
 - put camera in nice place
 
-That's a lot of things to take care of before a single polygon is drawn.
+That's a lot before a single polygon is drawn.
 
-So to help you get started, we've wrapped up all these functions in a helpful `WebGLWidget` class, where you can override some sensible defaults, only when you need to.
+So to help you get started, we've wrapped up all these functions into a helpful `WebGLWidget` class, with some choice defaults.
 
-Get started straight away!
+You can override the defaults when you want to, and concentrate on building awesome 3D graphics.
 
 
 # Typical workflow
