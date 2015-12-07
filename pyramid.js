@@ -30,7 +30,7 @@ class MyWebGlWidget extends WebGlWidget {
 
     animate( timeElapsed ) { 
 
-        this.rotateCamera(0, this.rotateAngPerStep, 0); 
+        this.rotateCameraAroundScene(0, this.rotateAngPerStep, 0); 
 
     }
 

@@ -455,15 +455,17 @@ class WebGlWidget extends Widget {
 
     fitCameraToShowAll() {
 
-        var sceneRadius = this.getSceneRadius();
-        this.changeZoom(2*sceneRadius);
-        this.near = 0;
-        this.far = sceneRadius;
-
+        this.sceneRadius = this.getSceneRadius();
+        this.setCameraZoomFromScene(2*this.sceneRadius);
+        this.camera.near = 0.1;
+        this.camera.far = 3*this.sceneRadius;
+        this.camera.updateProjectionMatrix();
+        this.scene.fog.near = this.sceneRadius;
+        this.scene.fog.far = 3*this.sceneRadius;
     }
 
 
-    rotateCamera ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true ) {
+    rotateCameraAroundScene ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true ) {
 
         var y = this.camera.up;
 
@@ -515,7 +517,7 @@ class WebGlWidget extends Widget {
     }
 
 
-    changeZoom ( newZoom ) {
+    setCameraZoomFromScene ( newZoom ) {
 
         this.camera.position
             .sub( this.scene.position )
@@ -526,6 +528,13 @@ class WebGlWidget extends Widget {
         this.zoom = newZoom;
 
         this.camera.lookAt( this.scene.position );
+
+        this.camera.near = 0.1;
+        this.camera.far = this.sceneRadius + this.zoom;
+        this.camera.updateProjectionMatrix();
+
+        this.scene.fog.near = this.zoom - this.sceneRadius;
+        this.scene.fog.far = this.sceneRadius + this.zoom;
 
         this.isChanged = true;
 
@@ -583,7 +592,7 @@ class WebGlWidget extends Widget {
 
     leftmousedrag( x0, y0, x1, y1 ) {
 
-        this.rotateCamera(
+        this.rotateCameraAroundScene(
             this.degToRad( y1 - y0 ), 
             this.degToRad( x1 - x0 ),
             0)
@@ -619,7 +628,7 @@ class WebGlWidget extends Widget {
             ratio = r0/r1;
         }
 
-        this.changeZoom( this.zoom * ratio );
+        this.setCameraZoomFromScene( this.zoom * ratio );
    
     }
 
@@ -634,15 +643,15 @@ class WebGlWidget extends Widget {
     mousescroll( wheel ) {
 
         var ratio = Math.pow(1 + Math.abs(wheel)/2 , wheel > 0 ? 1 : -1);
-        this.changeZoom( this.zoom * ratio );
+        this.setCameraZoomFromScene( this.zoom * ratio );
 
     }
 
 
     gesturedrag( rotDiff, ratio ){
 
-        this.rotateCamera( 0, 0, this.degToRad( rotDiff*2 ) );
-        this.changeZoom( this.zoom * ratio*ratio );
+        this.rotateCameraAroundScene( 0, 0, this.degToRad( rotDiff*2 ) );
+        this.setCameraZoomFromScene( this.zoom * ratio*ratio );
 
     }
 
