@@ -8,7 +8,7 @@ class MyWebGlWidget extends WebGlWidget {
 
     constructor( selector ) {
 
-        super( selector );
+        super( selector, 'white' );
 
         let geometry = new THREE.BoxGeometry( 40, 40, 40 );
 
@@ -39,7 +39,7 @@ class MyWebGlWidget extends WebGlWidget {
 
         this.hover = new PopupText( this.selector, "lightblue", "blue" );
 
-        this.fitCameraToShowAll();
+        this.moveCameraToShowAll();
 
     }
 
@@ -96,8 +96,8 @@ class MyWebGlWidget extends WebGlWidget {
 
 var widget = new MyWebGlWidget('#widget');
 
-window.onresize = () => widget.resize();
-
+window.addEventListener(
+    "resize", () => widget.resize());
 
 
 

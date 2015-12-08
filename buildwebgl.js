@@ -122,7 +122,8 @@ else {
         cache: {},
         packageCache: {},
         entries: [es6Script],
-        plugin: plugins
+        plugin: plugins,
+        debug: true
     });
 
     function bundle() {

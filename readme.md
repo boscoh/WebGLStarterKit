@@ -1,9 +1,7 @@
 
 # WebGL Starter Kit
 
-WebGL is awesome, and three.js makes it more so. But still, there is quite a lot to do to draw accelerated 3D graphics on your webpages.
-
-At the very least you need:
+Even though `WebGL` is awesome, and `three.js` makes it more so, there is still quite a lot to do to draw polygons on your webpages. At the very least, you need:
 
 - a scene
 - a renderer
@@ -13,7 +11,7 @@ At the very least you need:
 - an animation loop
 - a link to the DOM
 
-Beyond that, you might want to:
+Beyond that, you might also want to:
 
 - resize to the DOM
 - convert mouse/touch events
@@ -22,11 +20,11 @@ Beyond that, you might want to:
 - draw HUD elements over screen
 - put camera in a nice place
 
-That's a lot before a single polygon is drawn.
+That's before a single triangle is drawn.
 
-So to help you get started, we've wrapped up all these functions into a helpful `WebGLWidget` class, with some choice defaults.
+To help you get started, `WebGLWidget` provides a conveninet class that wraps all this into a nice class with some choice defaults.
 
-You can override the defaults when you want to, and concentrate on building awesome 3D graphics.
+So you can concentrate on building awesome `three.js` graphics. You can override the defaults later, when it's convenient for you.
 
 
 # Install
@@ -41,34 +39,39 @@ Then in the package:
     > npm install
 
 
-# Typical workflow
+# Quick example
 
-Let's create a simple WebGL app `sample.js`:
+The `WebGLStarterKit` assumes that you want to use ES6 and has been configured for that with `node.js`.
+
+Let's create a simple WebGL app `octahedron.js`. 
+
+First import the modules:
+
+    import three from "three.js";
+    import { WebGlWidget } from "./webglstarterkit.js";
+
+Then sublcass `WebGLWidget` and all your meshes in the constructor:
 
     class MyWidget extends WebGLWidget {
-
-        constructor( selector ) {
-            super( selector );
+            let material = new three.MeshLambertMaterial(
+                { color: 0xffff00 } );
+            let geom = new three.OctahedronGeometry(1, 0);
+            this.scene.add( new three.Mesh( geom, material ) )
+            this.fitCameraToShowAll();
         }
-
-        /* make objects */
-        let newObject = /* make your own object */
-        this.scene.append( newObject )
-
-        this.fitCameraToShowAll()
     }
 
-Then instantiate your class, by giving it a DOM selector
+Don't forget to call `this.fitCameraToShowAll` to automatically place the camera.
+
+Then instantiate your class to the DOM:
 
     var myWidget = MyWidget('#widget')
 
-Then use the following script to build your HTML page:
+Finally, use the following script to build your HTML page:
 
-    > ./buildwebgl sample.js
+    > ./buildwebgl octahedron.js
 
-Which will build `sample.compiled.js` and `sample.html`. 
-
-Now open `sample.html`.
+Now open `octahedron.html`.
 
 
 # Animation Loop
@@ -101,7 +104,7 @@ When you rotate the camera and you want the light to follow the camera, make sur
 
 The WebGL canvas needs to be manually resized. As such, if you have a resizable `<div>`, you need to set the resizing function:
 
-    window.onresize = () => widget.resize();
+    window.addEventListener("resize", () => widget.resize());
 
 This will resize the rendering canvas to the size of the surrounding `<div>`.
 
@@ -112,7 +115,6 @@ This will resize the rendering canvas to the size of the surrounding `<div>`.
 # Heads-up Display
 
 # WebGlWidget class
-
 
 _Constructor:_
 
@@ -169,7 +171,8 @@ Methods inherited from `Widget`:
  - `this.rightmousedrag( x0, y0, x1, y1 )`  - 
  - `this.gesturedrag( rot, scale ) ` - 
  - `this.draw()` - 
- - `this.animate( elapsedTime )` {}
+
+ - `this.animate( elapsedTime )` - override this to animate your meshes
 
 
 # Class PopupText

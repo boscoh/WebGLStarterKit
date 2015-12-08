@@ -336,10 +336,10 @@ class WebGlWidget extends Widget {
 
         // now create scene
         this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.Fog( this.backgroundColor, 1, 100 );
-        this.scene.fog.near = this.zoom + 1;
-        this.scene.fog.far = this.zoom + this.zBack;
-
+        this.scene.fog = new THREE.Fog( 
+            this.backgroundColor, 
+            this.zoom + 1, 100,
+            this.zoom + this.zBack );
 
 
         // stores light objects to rotate with camera motion
@@ -453,15 +453,15 @@ class WebGlWidget extends Widget {
     }
 
 
-    fitCameraToShowAll() {
+    moveCameraToShowAll() {
 
         this.sceneRadius = this.getSceneRadius();
-        this.setCameraZoomFromScene(2*this.sceneRadius);
+        this.setCameraZoomFromScene(2.5*this.sceneRadius);
         this.camera.near = 0.1;
-        this.camera.far = 3*this.sceneRadius;
+        this.camera.far = 3.5*this.sceneRadius;
         this.camera.updateProjectionMatrix();
         this.scene.fog.near = this.sceneRadius;
-        this.scene.fog.far = 3*this.sceneRadius;
+        this.scene.fog.far = 3.5*this.sceneRadius;
     }
 
 

@@ -23,7 +23,7 @@ class MyWebGlWidget extends WebGlWidget {
         mesh.position.set( 0, 90, 0 )
         this.scene.add( mesh );
 
-        this.fitCameraToShowAll();
+        this.moveCameraToShowAll();
 
         this.rotateAngPerStep = 0.02
     }
@@ -39,7 +39,8 @@ class MyWebGlWidget extends WebGlWidget {
 
 var widget = new MyWebGlWidget('#widget');
 
-window.onresize = () => widget.resize();
+window.addEventListener(
+    "resize", () => widget.resize());
 
 
 
