@@ -170,7 +170,8 @@ Methods inherited from `Widget`:
  - `this.leftmousedrag( x0, y0, x1, y1 )`  - 
  - `this.rightmousedrag( x0, y0, x1, y1 )`  - 
  - `this.gesturedrag( rot, scale ) ` - 
- - `this.draw()` - 
+
+ - `this.draw()` - override this and call `super` to add extra drawing to your object, e.g. updating pop up windows and heads-up displays
 
  - `this.animate( elapsedTime )` - override this to animate your meshes
 
