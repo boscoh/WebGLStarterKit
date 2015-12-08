@@ -22,9 +22,11 @@ Beyond that, you might also want to:
 
 That's before a single triangle is drawn.
 
-To help you get started, `WebGLWidget` provides a conveninet class that wraps all this into a nice class with some choice defaults.
+To help you get started, the `WebGLWidget` class wraps all this together with some choice defaults.
 
-So you can concentrate on building awesome `three.js` graphics. You can override the defaults later, when it's convenient for you.
+So you can concentrate on building awesome `three.js` graphics. 
+
+Override the defaults later, when it's convenient for you.
 
 
 # Install
@@ -41,7 +43,7 @@ Then in the package:
 
 # Quick example
 
-The `WebGLStarterKit` assumes that you want to use ES6 and has been configured for that with `node.js`.
+The `WebGLStarterKit` assumes that you want to use ES6.
 
 Let's create a simple WebGL app `octahedron.js`. 
 
@@ -50,18 +52,18 @@ First import the modules:
     import three from "three.js";
     import { WebGlWidget } from "./webglstarterkit.js";
 
-Then sublcass `WebGLWidget` and all your meshes in the constructor:
+Then sublcass `WebGLWidget` and add meshes to `this.scene` in the constructor:
 
     class MyWidget extends WebGLWidget {
             let material = new three.MeshLambertMaterial(
                 { color: 0xffff00 } );
-            let geom = new three.OctahedronGeometry(1, 0);
+            let geom = new three.OctahedronGeometry();
             this.scene.add( new three.Mesh( geom, material ) )
-            this.fitCameraToShowAll();
+            this.moveCameraToShowAll();
         }
     }
 
-Don't forget to call `this.fitCameraToShowAll` to automatically place the camera.
+Don't forget to call `this.moveCameraToShowAll` to automatically place the camera.
 
 Then instantiate your class to the DOM:
 
@@ -98,7 +100,7 @@ If you want different lights, override the method:
         this.lights.append(newLight);
     }
 
-When you rotate the camera and you want the light to follow the camera, make sure you set the parameter `isRotatingLights` in `this.rotateCameraAroundScene`. Otherwise, the light is static and you rotate around the shadows.
+When you rotate the camera and you want the light to follow the camera, make sure you set the parameter `isRotatingLights` in `this.rotateCameraAroundSceneAroundScene`. Otherwise, the light is static and you rotate around the shadows.
 
 # Resizing 
 
@@ -151,13 +153,13 @@ _Methods:_
  - `this.animate( elapsedTime )` - this is called every time the animation loop is called, `elapsedTime` gives the time since last call
 
  - `this.getSceneRadius()` - gives the bounding radius from `this.scene.position` of all the meshes in `this.scene`
- - `this.fitCameraToShowAll()` - conveniently moves `this.camera` to twice the distance of `this.getSceneRadius()`
+ - `this.moveCameraToShowAll()` - conveniently moves `this.camera` to twice the distance of `this.getSceneRadius()`
 
- - `this.rotateCamera ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true )` - rotates `this.camera` around `this.scene.position` with respect to the axes:
+ - `this.rotateCameraAroundScene ( xRotAngle, yRotAngle, zRotAngle, isRotateLights=true )` - rotates `this.camera` around `this.scene.position` with respect to the axes:
      - `z` - direction of `this.camera` to center
      - `y` - direction of `this.camera.up`
      - `x` - the other orthonormal direction
- - `this.changeZoom ( newZoom )` - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction 
+ - `this.setCameraZoomFromScene ( newZoom )` - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction 
 
  - `this.getDepth( pos )` - converts `pos` into a depth value relative to `this.scene.position` in the camera direction. Negative are in front of `this.scene.position`. Positive values are behind.
  - `this.getClickedMeshes()` - find the `this.clickedMesh` given the current scne
