@@ -78,17 +78,17 @@ Now open `octahedron.html`.
 
 # Animation Loop
 
-To allow for the possiblity of multiple WebGLWidgets in one page, all WebGLWidgets will be registered through a single animation loop. 
+To allow for the possiblity of multiple widgets in one page, all `WebGLWidget`'s are registered through a single animation loop. 
 
-The animation loop works through the `registerWidgetForAnimation(widget)` function. It takes any object that has the interface:
+The animation loop works through the `registerWidgetForAnimation(widget)` function, which takes any `widget` with the interface:
 
 - property `widget.isChanged` - indicates if draw should happen
 - method `widget.draw()`  - draws at the right time
 - method `widget.animate(timeElapsed)` - animates with the given elapsed time since last animate
 
-The WebGLWidget instances will call this automatically, but you can always add yours onto the animation loop.
+The `WebGLWidget` instances will call this automatically, but you can always add your custom objects onto the animation loop.
 
-In this way, there is one single animation loop that animates all your widgets simultaneously between drawing calls. The animation loop is tied to the browser's drawing loop.
+The animation loop is tied to the browser's internal drawing loop, and thus will draw all widgets at the same time.
 
 
 # Lights
@@ -106,7 +106,7 @@ When you rotate the camera and you want the light to follow the camera, make sur
 
 The WebGL canvas needs to be manually resized. As such, if you have a resizable `<div>`, you need to set the resizing function:
 
-    window.addEventListener("resize", () => widget.resize());
+    window.addEventListener("resize", () => myWidget.resize());
 
 This will resize the rendering canvas to the size of the surrounding `<div>`.
 
