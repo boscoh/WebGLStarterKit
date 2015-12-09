@@ -28,7 +28,6 @@ So you can concentrate on building awesome `three.js` graphics.
 
 Override the defaults later, when it's convenient for you.
 
-
 # Install
 
 Download the package:
@@ -43,7 +42,7 @@ Then in the package:
 
 # Quick example
 
-The `WebGLStarterKit` assumes that you want to use ES6.
+The `WebGLStarterKit` assumes that you want to use ES6. In particular, the builder `buildwebgl.js` automatically transpiles from ES6 (which is backwards compatible with vanilla javascript).
 
 Let's create a simple WebGL app `octahedron.js`. 
 
@@ -110,11 +109,91 @@ The WebGL canvas needs to be manually resized. As such, if you have a resizable 
 
 This will resize the rendering canvas to the size of the surrounding `<div>`.
 
-# Input
+# Handling Mouse/Pointer Input
 
-# Raycasting
+Your typical widgets should handle mouse input, and this is quite tricky to do that with the typical DOM event listeners. 
+
+Thus the method `this.bindCallbacks()` will bind a number of convenient methods to the mouse input of `this.divDom`:
+
+ - `this.mousescroll( wheel )`
+ - `this.mouseclick( x, y )`  
+ - `this.mousedoubleclick( x, y )`  
+ - `this.leftmousedrag( x0, y0, x1, y1 )`  
+ - `this.rightmousedrag( x0, y0, x1, y1 )` 
+ - `this.gesturedrag( rot, scale ) ` 
+
+In particular, the `x, y` pairs are scaled to the size of your `this.divDOM`. The width and height are obtained from `this.width()` and `this.height()`. 
+
+`calcPointerXY( event )`
+
+If you're familiar with event handlers, the widget actually binds the following methods to their namesake handlers in `this.divDOM`:
+
+- `this.mousedown( event )`
+- `this.mousemove( event )`
+- `this.mouseup( event )`
+- `this.mousewheel( event )`
+- `this.DOMMouseScroll( event )`
+- `this.touchstart( event )`
+- `this.touchmove( event )`
+- `this.touchend( event )`
+- `this.touchcancel( event )`
+- `this.gesturestart( event )`
+- `this.gesturechange( event )`
+- `this.gestureend( event )`
+
+
+If you're familiar with event handlers, just override them:
+
+    this.mousedown( e ) = /* your function */
+
+Of course, this will override the convenient handlers from above.
+
+Inside these routines, a very important function to calculate the pointer position `this.calcPointerXY( event )`. this function takes a DOM event that contains pointer positions in a particular webpage state based coordinate system and translates to the coordinate system of the `this.divDom`, from 0 to `this.width()`, and 0 to `this.height()`. This translation is crucial for embedded widgets that can be anywhere on a scrollabel webpage.
+
+You can always call this function to unravel any `event` object.
+
+# Raycasting: Clicking on Meshes
+
+For interactivity, you will want to be able to click on 3D objects in your scenes. The way to do this is, while in the constructor, add any meshes you want to keep track off into the list `this.clickableMeshes`:
+
+    this.clickableMeshes.push( mesh )
+
+Add any identifying information the the mesh, maybe some kind of ID.
+
+Then, during the input methods, call:
+
+    this.getClickedMeshes()
+
+This assumes that `this.calcPointerXY( event )` has been called at some point already and we have obtained `this.pointerX` and `this.pointerY`. The function will set the property `this.clickedMesh` which will refer to the top-most clicked mesh in `this.clickableMeshes`. 
 
 # Heads-up Display
+
+In WebGL apps, it's actually faster to draw text labels and such with HTML elements on top of the WebGL `<canvas>` rather than to draw text in the WebGL context itself.
+
+In order to link 3D objects and HTML elements you will need to convert an object's 3D position into screen coordinates of your `<div>`.
+
+Let's say you have three.js mesh, say `this.clickedMesh` from the last section. To calculate it's screen coordinates:
+
+    let screen = this.calcScreenXYOfPos( this.clickedMesh );
+
+You can then instantiate a `<div>`, and a nice little object wrapper around a movable `<div>` is `PopupText`.
+
+- class PopupText
+
+    - `constructor( selector, backgroundColor='white', textColor='black', opacity=0.7 )`
+    - `this.move( x, y )`
+    - `this.hide()`
+    - `this.html( text )`
+    - `this.remove()`
+
+So you can then:
+
+    this.hover.move( screen.x, screen.y );
+
+
+the PopupText( this.selector, "lightblue", "blue" );
+
+
 
 # WebGlWidget class
 
@@ -176,15 +255,6 @@ Methods inherited from `Widget`:
  - `this.draw()` - override this and call `super` to add extra drawing to your object, e.g. updating pop up windows and heads-up displays
 
  - `this.animate( elapsedTime )` - override this to animate your meshes
-
-
-# Class PopupText
-
- - `constructor( selector, backgroundColor='white', textColor='black', opacity=0.7 )`
- - `this.move( x, y )`
- - `this.hide()`
- - `this.html( text )`
- - `this.remove()`
 
 
 
