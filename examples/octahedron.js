@@ -1,7 +1,5 @@
-
-
 import THREE from "three";
-import { WebGlWidget } from "./webglstarterkit.js";
+import { WebGlWidget } from "../webglstarterkit.js";
 
 
 class MyWebGlWidget extends WebGlWidget {
@@ -19,8 +17,8 @@ class MyWebGlWidget extends WebGlWidget {
         this.moveCameraToShowAll();
     }
 
-    animate( timeElapsed ) { 
-        this.rotateCameraAroundScene(0, 0.002, 0); 
+    animate( timeElapsed ) {
+        this.rotateCameraAroundScene(0, 0.002, 0);
     }
 
 }

@@ -1,6 +1,4 @@
-
-
-var { WebGlWidget, PopupText } = require("./webglstarterkit.js");
+var { WebGlWidget, PopupText } = require("../webglstarterkit.js");
 var THREE = require("three");
 
 
@@ -14,9 +12,9 @@ class MyWebGlWidget extends WebGlWidget {
 
         for ( let i = 0; i < 200; i ++ ) {
 
-            let mesh = new THREE.Mesh( 
-                geometry, 
-                new THREE.MeshLambertMaterial( 
+            let mesh = new THREE.Mesh(
+                geometry,
+                new THREE.MeshLambertMaterial(
                     { color: Math.random() * 0xffffff } ) );
 
             mesh.position.x = Math.random() * 1000 - 500;
@@ -64,8 +62,8 @@ class MyWebGlWidget extends WebGlWidget {
 
             if ( this.clickedMesh != topMesh ) {
 
-                if ( this.clickedMesh ) 
-                    this.clickedMesh.material.emissive.setHex( 
+                if ( this.clickedMesh )
+                    this.clickedMesh.material.emissive.setHex(
                         this.clickedMesh.currentHex );
 
                 this.clickedMesh = topMesh;
@@ -76,8 +74,8 @@ class MyWebGlWidget extends WebGlWidget {
 
             } else {
 
-                if ( this.clickedMesh ) 
-                    this.clickedMesh.material.emissive.setHex( 
+                if ( this.clickedMesh )
+                    this.clickedMesh.material.emissive.setHex(
                         this.clickedMesh.currentHex );
 
                 this.clickedMesh = null;
