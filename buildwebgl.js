@@ -18,7 +18,7 @@ buildwebgl.js - compiles a WebGLStartKit ES2015 file into a working website
 
 usage: buildwebgl.js [--watch -w] sample.js
 
- --watch - watchify mode, run continuously, and recompile if sample.js 
+ --watch - watchify mode, run continuously, and recompile if sample.js
            has changed
 
 Will compile downto sample.compiled.js and create sample.html that will
@@ -29,27 +29,29 @@ display the WebGL graphics.
 
 function buildHtml(html, selector, outScript) {
 
-    var htmlText = 
+    var outScriptBase = path.basename(outScript);
+
+    var htmlText =
     `<html>
     <head>
     <style>
-        body { 
-            margin: 0 
+        body {
+            margin: 0
         }
     </style>
     </head>
     <body>
-        <div id="${selector}" 
+        <div id="${selector}"
              style="width:100%; height:100%;">
         </div>
     </body>
-    <script src="${outScript}"></script>
+    <script src="${outScriptBase}"></script>
     </html>`
 
     fs.writeFile(
-        html, 
+        html,
         prettyHtml.prettyPrint(
-            htmlText, 
+            htmlText,
             { indent_size: 2 }
         )
     );
@@ -62,9 +64,10 @@ function checkHtml(html, selector, outScript) {
     var tree = cheerio.load(fs.readFileSync(html));
 
     var root = tree.root()
+    var outScriptBase = path.basename(outScript);
 
-    if ( tree( `script[src="${outScript}"]`).length == 0 ) {
-        root.append(`<script src="${outScript}"></script>`);
+    if ( tree( `script[src="${outScriptBase}"]`).length == 0 ) {
+        root.append(`<script src="${outScriptBase}"></script>`);
     }
 
     if ( tree( `div[id="${selector}"]`).length == 0 ) {
@@ -90,7 +93,7 @@ if ( remain.length == 0 ) {
 
   console.log(doc);
 
-} 
+}
 else {
 
     const es6Script = remain[0];
@@ -106,7 +109,7 @@ else {
     if (!fs.existsSync(html)) {
         console.log( "Creating", outScript, '->', selector, '->', html);
         buildHtml(html, selector, outScript);
-    } 
+    }
     else {
         console.log( "Checking", outScript, '->', selector, '->', html);
         checkHtml(html, selector, outScript);
@@ -114,7 +117,7 @@ else {
 
     console.log( es6Script, '->', outScript);
 
-    var plugins = []; 
+    var plugins = [];
     if (parsed.watch) {
         plugins.push(watchify);
     }

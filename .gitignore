@@ -1,2 +1,4 @@
 node_modules
-
+*.compiled.js
+examples/*.html
+.DS_Store

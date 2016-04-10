@@ -24,7 +24,7 @@ That's before a single triangle is drawn.
 
 To help you get started, the `WebGLWidget` class wraps all this together with some choice defaults.
 
-So you can concentrate on building awesome `three.js` graphics. 
+So you can concentrate on building awesome `three.js` graphics.
 
 Override the defaults later, when it's convenient for you.
 
@@ -33,7 +33,11 @@ Override the defaults later, when it's convenient for you.
 Download the package:
 	<https://github.com/boscoh/WebGLStarterKit/archive/master.zip>
 
-Make sure you have installed `node.js`.
+Or clone the repository
+
+    git clone https://github.com/boscoh/WebGLStarterKit.git
+
+Make sure you have installed [NodeJS](https://nodejs.org/en/).
 
 Then in the package:
 
@@ -42,22 +46,22 @@ Then in the package:
 
 # Quick example
 
-The `WebGLStarterKit` assumes that you want to use ES6. In particular, the builder `buildwebgl.js` automatically transpiles from ES6 (which is backwards compatible with vanilla javascript).
+The `WebGLStarterKit` assumes that you want to use [ES6](https://babeljs.io/docs/learn-es2015/). In particular, the builder `buildwebgl.js` automatically transpiles from ES6 (which is backwards compatible with vanilla javascript).
 
-Let's create a simple WebGL app `octahedron.js`. 
+Let's create a simple WebGL app `octahedron.js`.
 
 First import the modules:
 
-    import three from "three.js";
+    import THREE from "three.js";
     import { WebGlWidget } from "./webglstarterkit.js";
 
 Then sublcass `WebGLWidget` and add meshes to `this.scene` in the constructor:
 
     class MyWidget extends WebGLWidget {
-            let material = new three.MeshLambertMaterial(
+            let material = new THREE.MeshLambertMaterial(
                 { color: 0xffff00 } );
-            let geom = new three.OctahedronGeometry();
-            this.scene.add( new three.Mesh( geom, material ) )
+            let geom = new THREE.OctahedronGeometry();
+            this.scene.add( new THREE.Mesh( geom, material ) )
             this.moveCameraToShowAll();
         }
     }
@@ -77,7 +81,7 @@ Now open `octahedron.html`.
 
 # Animation Loop
 
-To allow for the possiblity of multiple widgets in one page, all `WebGLWidget`'s are registered through a single animation loop. 
+To allow for the possiblity of multiple widgets in one page, all `WebGLWidget`'s are registered through a single animation loop.
 
 The animation loop works through the `registerWidgetForAnimation(widget)` function, which takes any `widget` with the interface:
 
@@ -101,7 +105,7 @@ If you want different lights, override the method:
 
 When you rotate the camera and you want the light to follow the camera, make sure you set the parameter `isRotatingLights` in `this.rotateCameraAroundSceneAroundScene`. Otherwise, the light is static and you rotate around the shadows.
 
-# Resizing 
+# Resizing
 
 The WebGL canvas needs to be manually resized. As such, if you have a resizable `<div>`, you need to set the resizing function:
 
@@ -111,18 +115,18 @@ This will resize the rendering canvas to the size of the surrounding `<div>`.
 
 # Handling Mouse/Pointer Input
 
-Your typical widgets should handle mouse input, and this is quite tricky to do that with the typical DOM event listeners. 
+Your typical widgets should handle mouse input, and this is quite tricky to do that with the typical DOM event listeners.
 
 Thus the method `this.bindCallbacks()` will bind a number of convenient methods to the mouse input of `this.divDom`:
 
  - `this.mousescroll( wheel )`
- - `this.mouseclick( x, y )`  
- - `this.mousedoubleclick( x, y )`  
- - `this.leftmousedrag( x0, y0, x1, y1 )`  
- - `this.rightmousedrag( x0, y0, x1, y1 )` 
- - `this.gesturedrag( rot, scale ) ` 
+ - `this.mouseclick( x, y )`
+ - `this.mousedoubleclick( x, y )`
+ - `this.leftmousedrag( x0, y0, x1, y1 )`
+ - `this.rightmousedrag( x0, y0, x1, y1 )`
+ - `this.gesturedrag( rot, scale ) `
 
-In particular, the `x, y` pairs are scaled to the size of your `this.divDOM`. The width and height are obtained from `this.width()` and `this.height()`. 
+In particular, the `x, y` pairs are scaled to the size of your `this.divDOM`. The width and height are obtained from `this.width()` and `this.height()`.
 
 `calcPointerXY( event )`
 
@@ -164,7 +168,7 @@ Then, during the input methods, call:
 
     this.getClickedMeshes()
 
-This assumes that `this.calcPointerXY( event )` has been called at some point already and we have obtained `this.pointerX` and `this.pointerY`. The function will set the property `this.clickedMesh` which will refer to the top-most clicked mesh in `this.clickableMeshes`. 
+This assumes that `this.calcPointerXY( event )` has been called at some point already and we have obtained `this.pointerX` and `this.pointerY`. The function will set the property `this.clickedMesh` which will refer to the top-most clicked mesh in `this.clickableMeshes`.
 
 # Heads-up Display
 
@@ -238,19 +242,19 @@ _Methods:_
      - `z` - direction of `this.camera` to center
      - `y` - direction of `this.camera.up`
      - `x` - the other orthonormal direction
- - `this.setCameraZoomFromScene ( newZoom )` - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction 
+ - `this.setCameraZoomFromScene ( newZoom )` - moves `this.camera` to the distance `newZoom` from `this.scene` in current direction
 
  - `this.getDepth( pos )` - converts `pos` into a depth value relative to `this.scene.position` in the camera direction. Negative are in front of `this.scene.position`. Positive values are behind.
  - `this.getClickedMeshes()` - find the `this.clickedMesh` given the current scne
 
 Methods inherited from `Widget`:
 
- - `this.mousescroll( wheel )` - 
- - `this.mouseclick( x, y )`  - 
- - `this.mousedoubleclick( x, y )`  - 
- - `this.leftmousedrag( x0, y0, x1, y1 )`  - 
- - `this.rightmousedrag( x0, y0, x1, y1 )`  - 
- - `this.gesturedrag( rot, scale ) ` - 
+ - `this.mousescroll( wheel )` -
+ - `this.mouseclick( x, y )`  -
+ - `this.mousedoubleclick( x, y )`  -
+ - `this.leftmousedrag( x0, y0, x1, y1 )`  -
+ - `this.rightmousedrag( x0, y0, x1, y1 )`  -
+ - `this.gesturedrag( rot, scale ) ` -
 
  - `this.draw()` - override this and call `super` to add extra drawing to your object, e.g. updating pop up windows and heads-up displays
 
