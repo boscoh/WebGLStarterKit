@@ -1,5 +1,3 @@
-
-
 var { WebGlWidget, PopupText } = require("../webglstarterkit.js");
 var THREE = require("three");
 
