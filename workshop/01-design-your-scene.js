@@ -72,15 +72,6 @@ class DesignScene extends WebGlWidget {
 
         // Finally, we need to tell the webgl starterkit to set the scene
         this.moveCameraToShowAll();
-        this.rotateAngPerStep = 0.02;
-    }
-
-    // We can move the camera slightly at each time step. WebGL starter kit
-    // provides such a function called `animate()`, which we can override
-    animate ( timeElapsed ) {
-
-        this.rotateCameraAroundScene(0, this.rotateAngPerStep, 0);
-
     }
 
 }
