@@ -131,7 +131,7 @@ class Widget {
 
         var isDoubleClick = ( now - this.timeLastPressed ) < 500;
         if ( isDoubleClick ) {
-            this.mousedoubleclick( this.pointerX, this.pointerY ); 
+            this.mousedoubleclick( this.pointerX, this.pointerY );
         };
 
         this.timeLastPressed = now;
@@ -167,7 +167,7 @@ class Widget {
 
             } else {
 
-                this.leftmousedrag( 
+                this.leftmousedrag(
                     this.savePointerX, this.savePointerY,
                     this.pointerX, this.pointerY );
 
@@ -211,7 +211,7 @@ class Widget {
     gesturechange( event ) {
 
         event.preventDefault();
-        gesturedrag( 
+        gesturedrag(
             event.rotation - this.gestureRot,
             this.gestureScale / event.scale )
 
@@ -274,46 +274,57 @@ class Widget {
 // - .draw()
 ////////////////////////////////////////////////////////////////////
 
-function registerWidgetForAnimation(widget) {
+// These are not global variables since they are within an ES6 module 😺
+var animationWidgets;
+var lastAnimationTime;
+var totalAnimationTime;
 
-    var loop = function() {
-  
+var registerWidgetForAnimation = (widget) => {
+
+    var loop = () => {
+
         requestAnimationFrame( loop );
-    
-        if (window.animationWidgets.length == 0 ) {
+
+        if (animationWidgets.length === 0 ) {
             return;
         }
-    
-        var currTime = (new Date).getTime();
-        var elapsedTime = currTime - window.lastAnimationTime;
-        for (let widget of window.animationWidgets) {
-            widget.animate( elapsedTime );
+
+        var currTime = new Date().getTime();
+        var elapsedTime = currTime - lastAnimationTime;
+        totalAnimationTime += elapsedTime;
+
+        for (let widget of animationWidgets) {
+            widget.animate( elapsedTime, totalAnimationTime );
         }
-        window.lastAnimationTime = currTime;
-    
-        for (let widget of window.animationWidgets) {
+
+        lastAnimationTime = currTime;
+
+        for (let widget of animationWidgets) {
             if (widget.isChanged) {
                 widget.draw();
             }
         }
-  
-    }
-  
-    if (typeof window.animationWidgets == 'undefined') {
-        window.animationWidgets = []
-        window.lastAnimationTime = (new Date).getTime();
-        loop();
-    }
-  
-    window.animationWidgets.push(widget);
-}
 
+    };
+
+    if (typeof animationWidgets === 'undefined') {
+
+        animationWidgets = [];
+        lastAnimationTime = new Date().getTime();
+        totalAnimationTime = 0;
+        loop();
+
+    }
+
+    animationWidgets.push(widget);
+
+};
 
 
 ////////////////////////////////////////////////////////////////////
 // A Starter WebGLWidget to embed in a <div> determined by selector
-// Subclass this! Add models and controllers, override 
-// input functions, and WebGL construction 
+// Subclass this! Add models and controllers, override
+// input functions, and WebGL construction
 ////////////////////////////////////////////////////////////////////
 
 class WebGlWidget extends Widget {
@@ -336,8 +347,8 @@ class WebGlWidget extends Widget {
 
         // now create scene
         this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.Fog( 
-            this.backgroundColor, 
+        this.scene.fog = new THREE.Fog(
+            this.backgroundColor,
             this.zoom + 1, 100,
             this.zoom + this.zBack );
 
@@ -441,12 +452,12 @@ class WebGlWidget extends Widget {
                     objectCenter);
 
                 object.geometry.computeBoundingSphere();
-                var objectRadius = 
+                var objectRadius =
                     dCenter + object.geometry.boundingSphere.radius;
 
                 sceneRadius = Math.max(objectRadius, sceneRadius);
             }
-        });       
+        });
 
         return sceneRadius;
 
@@ -579,8 +590,8 @@ class WebGlWidget extends Widget {
 
         var screenXY = new THREE.Vector2()
             .set(
-                - 1 + this.pointerX / this.width()  * 2, 
-                + 1 - this.pointerY / this.height() * 2 
+                - 1 + this.pointerX / this.width()  * 2,
+                + 1 - this.pointerY / this.height() * 2
             );
 
         this.raycaster.setFromCamera( screenXY, this.camera );
@@ -593,7 +604,7 @@ class WebGlWidget extends Widget {
     leftmousedrag( x0, y0, x1, y1 ) {
 
         this.rotateCameraAroundScene(
-            this.degToRad( y1 - y0 ), 
+            this.degToRad( y1 - y0 ),
             this.degToRad( x1 - x0 ),
             0)
 
@@ -629,7 +640,7 @@ class WebGlWidget extends Widget {
         }
 
         this.setCameraZoomFromScene( this.zoom * ratio );
-   
+
     }
 
 
@@ -779,11 +790,11 @@ class PopupText {
 
 
 
-module.exports = { 
-    Widget, 
-    WebGlWidget, 
+module.exports = {
+    Widget,
+    WebGlWidget,
     PopupText,
-    registerWidgetForAnimation 
+    registerWidgetForAnimation
 }
 
 
