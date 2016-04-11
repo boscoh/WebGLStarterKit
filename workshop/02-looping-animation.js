@@ -45,16 +45,13 @@ class LoopingAnimation extends WebGlWidget {
         this.scene.add( sphereMesh );
         this.scene.add( torusMesh );
 
-        // We can setup a variable to keep track of total time elapsed
-        this.totalElapsedTime = 0;
-
         // Finally, we need to tell the webgl starterkit to set the scene
         this.moveCameraToShowAll();
     }
 
     // We can move the camera slightly at each time step. WebGL starter kit
     // provides such a function called `animate()`, which we can override
-    animate ( elapsedTime ) {
+    animate ( elapsedTime, totalElapsedTime ) {
 
         // `three.js` provides a number of ways to animate transformations:
         //  * translateX (distance)
@@ -70,10 +67,7 @@ class LoopingAnimation extends WebGlWidget {
         this.torusMesh.rotateOnAxis(new THREE.Vector3(0, 0, 1), elapsedTime * 0.001);
 
         // We can move around the sphere
-        this.sphereMesh.position.set(0, 0, Math.sin(this.totalElapsedTime * 0.001));
-
-        // Accumulate time for sine() to be used
-        this.totalElapsedTime += elapsedTime;
+        this.sphereMesh.position.set(0, 0, Math.sin(totalElapsedTime * 0.001));
     }
 
 }
