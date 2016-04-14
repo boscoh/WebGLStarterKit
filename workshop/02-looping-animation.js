@@ -68,6 +68,17 @@ class LoopingAnimation extends WebGlWidget {
 
         // We can move around the sphere
         this.sphereMesh.position.set(0, 0, Math.sin(totalElapsedTime * 0.001));
+
+        // Impulse timing function
+        // http://iquilezles.org/www/articles/functions/functions.htm
+        let impulse = (amplitude, time) => {
+            let h = amplitude * time;
+            return h * Math.exp(1 - h);
+        };
+
+        this.torusMesh.position.set(0, 0, 4 + impulse(4, (totalElapsedTime * 0.001) % 3));
+        this.sphereMesh.position.set(0, impulse(2, (totalElapsedTime * 0.001 + 1) % 3), 0);
+        this.boxMesh.position.set(0, -impulse(2, (totalElapsedTime * 0.001 + 2) % 3), -2);
     }
 
 }

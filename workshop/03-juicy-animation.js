@@ -16,28 +16,28 @@ class LoopingAnimation extends WebGlWidget {
         // Call `super()` to make sure the superclass constructor is run
         super( selector, backgroundColor );
 
-        // Create our geometry
-        let box = new THREE.BoxGeometry( 1, 1, 1 );
-        let sphere = new THREE.SphereGeometry( 1, 12, 12 );
-        let torus = new THREE.TorusGeometry( 2, 1, 12, 12 );
+        // Create our snowman
+        let head = new THREE.SphereGeometry( 1, 12, 12 );
+        let body = new THREE.SphereGeometry( 1.65, 12, 12 );
+        // let torus = new THREE.TorusGeometry( 2, 1, 12, 12 );
 
         // Give it a shading material. Lambert is a common and fast material
         // that lights up objects with a "matte" finish.
-        let boxMaterial = new THREE.MeshLambertMaterial( { color: 0x1234ff } );
-        let sphereMaterial = new THREE.MeshLambertMaterial( { color: 0x34ff12 } );
-        let torusMaterial = new THREE.MeshLambertMaterial( { color: 0xff3412 } );
+        // let boxMaterial = new THREE.MeshLambertMaterial( { color: 0x1234ff } );
+        let snowMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+        // let torusMaterial = new THREE.MeshLambertMaterial( { color: 0xff3412 } );
 
         // Create our mesh, which has geometry and material defined.
         // We assign the meshes into `this` class so we can access it in another
         // function.
-        let boxMesh = this.boxMesh = new THREE.Mesh( box, boxMaterial );
-        let sphereMesh = this.sphereMesh = new THREE.Mesh( sphere, sphereMaterial );
-        let torusMesh = this.torusMesh = new THREE.Mesh( torus, torusMaterial );
+        let headMesh = this.headMesh = new THREE.Mesh( head, sphereMaterial );
+        let bodyMesh = this.bodyMesh = new THREE.Mesh( body, sphereMaterial );
+        // let torusMesh = this.torusMesh = new THREE.Mesh( torus, torusMaterial );
 
         // Add the mesh to the scene
-        this.scene.add( boxMesh );
-        this.scene.add( sphereMesh );
-        this.scene.add( torusMesh );
+        this.scene.add( headMesh );
+        this.scene.add( bodyMesh );
+        // this.scene.add( torusMesh );
 
         // Finally, we need to tell the webgl starterkit to set the scene
         this.moveCameraToShowAll();
@@ -47,16 +47,6 @@ class LoopingAnimation extends WebGlWidget {
     // provides such a function called `animate()`, which we can override
     animate ( elapsedTime, totalElapsedTime ) {
 
-        // Impulse timing function
-        // http://iquilezles.org/www/articles/functions/functions.htm
-        let impulse = (amplitude, time) => {
-            let h = amplitude * time;
-            return h * Math.exp(1 - h);
-        };
-
-        this.torusMesh.position.set(0, 0, 4 + impulse(4, (totalElapsedTime * 0.001) % 3));
-        this.sphereMesh.position.set(0, impulse(2, (totalElapsedTime * 0.001 + 1) % 3), 0);
-        this.boxMesh.position.set(0, -impulse(2, (totalElapsedTime * 0.001 + 2) % 3), -2);
     }
 
 }
