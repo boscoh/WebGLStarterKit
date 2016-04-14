@@ -11,7 +11,7 @@ import { WebGlWidget } from "../webglstarterkit.js";
 // Let's declare a class and extend `WebGlWidget`, and define its constructor.
 class Snowman extends WebGlWidget {
 
-    constructor ( selector, backgroundColor=0x112244 ) {
+    constructor ( selector, backgroundColor=0xdddddd ) {
 
         // Call `super()` to make sure the superclass constructor is run
         super( selector, backgroundColor );
