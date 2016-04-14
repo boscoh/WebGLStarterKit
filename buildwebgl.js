@@ -134,6 +134,11 @@ else {
     }
 
     bundler.on('update', bundle);
+    bundler.on('error', (err) => {
+        console.log(err.message);
+        this.emit('end');
+    });
+
     bundler.transform(babelify, { presets: "es2015" });
 
     bundle();
