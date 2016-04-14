@@ -58,7 +58,7 @@ class LoopingAnimation extends WebGlWidget {
         //  * translateY (distance)
         //  * translateZ (distance)
         //  * translateOnAxis (axis, distance)
-        //  * rotateOnAxi (axis, distance)
+        //  * rotateOnAxis (axis, distance)
 
         // We can move the sphere along an axis
         this.boxMesh.translateZ(elapsedTime * -0.001);
