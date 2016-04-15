@@ -41,7 +41,9 @@ class MyWebGlWidget extends WebGlWidget {
 
         this.moveCameraToShowAll();
 
-        this.keyPress = false;
+        this.showBoxes = true;
+        this.pulseBoxes = false;
+
     }
 
     draw() {
@@ -91,22 +93,26 @@ class MyWebGlWidget extends WebGlWidget {
 
     }
 
-    handleKeypress () {
+    handleKeypress (event) {
 
-        this.keyPress = !this.keyPress;
+        if (event.keyCode == 32) {
+            this.showBoxes = !this.showBoxes;
+        } else if (event.keyCode == 13) {
+            this.pulseBoxes = !this.pulseBoxes;
+        }
 
-        // let i = 0;
-        // for (let mesh of this.clickableMeshes) {
-        //     if (i % 2 == 0) {
-        //         mesh.visible = !this.keyPress;
-        //     }
-        //     i += 1;
-        // }
+        let i = 0;
+        for (let mesh of this.clickableMeshes) {
+            if (i % 2 == 1) {
+                mesh.visible = this.showBoxes;
+            }
+            i += 1;
+        }
     }
 
     animate ( elapsedTime, totalElapsedTime ) {
 
-        if (this.keyPress) {
+        if (this.pulseBoxes) {
             let i = 0;
             for (let mesh of this.clickableMeshes) {
                 if (i % 2 == 0) {
@@ -115,7 +121,15 @@ class MyWebGlWidget extends WebGlWidget {
                 }
                 i += 1;
             }
+
         }
+
+        if ( this.clickedMesh ) {
+            let v = 1 + 0.3 * Math.sin(2* totalElapsedTime * 0.005);
+            let mesh = this.clickedMesh;
+            mesh.scale.set(v*mesh.initScale.x, v*mesh.initScale.y, v*mesh.initScale.z);
+        }
+
     }
 
 }
@@ -128,7 +142,7 @@ window.addEventListener(
     "resize", () => widget.resize());
 
 document.addEventListener('keydown', function(event) {
-    widget.flipSpheres();
+    widget.handleKeypress(event);
 });
 
 
