@@ -101,33 +101,30 @@ class MyWebGlWidget extends WebGlWidget {
             this.pulseBoxes = !this.pulseBoxes;
         }
 
-        let i = 0;
-        for (let mesh of this.clickableMeshes) {
-            if (i % 2 == 1) {
+        this.clickableMeshes.forEach((mesh, i) => {
+            if (i % 2 == 0) {
                 mesh.visible = this.showBoxes;
             }
-            i += 1;
-        }
+        });
     }
 
     animate ( elapsedTime, totalElapsedTime ) {
 
         if (this.pulseBoxes) {
-            let i = 0;
-            for (let mesh of this.clickableMeshes) {
-                if (i % 2 == 0) {
-                    let v = 1 + 0.2 * Math.sin(totalElapsedTime * 0.005);
-                    mesh.scale.set(v*mesh.initScale.x, v*mesh.initScale.y, v*mesh.initScale.z);
+            this.clickableMeshes.forEach((mesh, i) => {
+                if (i % 2 == 1) {
+                    let a = 1 + 0.2 * Math.sin(totalElapsedTime * 0.005);
+                    let v = new THREE.Vector3().copy(mesh.initScale);
+                    mesh.scale.copy(v.multiplyScalar(a));
                 }
-                i += 1;
-            }
-
+            });
         }
 
         if ( this.clickedMesh ) {
-            let v = 1 + 0.3 * Math.sin(2* totalElapsedTime * 0.005);
             let mesh = this.clickedMesh;
-            mesh.scale.set(v*mesh.initScale.x, v*mesh.initScale.y, v*mesh.initScale.z);
+            let a = 1 + 0.3 * Math.sin(2* totalElapsedTime * 0.005);
+            let v = new THREE.Vector3().copy(mesh.initScale);
+            mesh.scale.copy(v.multiplyScalar(a));
         }
 
     }
@@ -135,14 +132,12 @@ class MyWebGlWidget extends WebGlWidget {
 }
 
 
-
 var widget = new MyWebGlWidget('#widget');
 
 window.addEventListener(
     "resize", () => widget.resize());
 
-document.addEventListener('keydown', function(event) {
-    widget.handleKeypress(event);
-});
+document.addEventListener(
+    'keydown', (e) => widget.handleKeypress(e));
 
 

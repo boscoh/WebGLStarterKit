@@ -26,7 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/boscoh/WebGLStarterKit.git"
   },
-  "author": "Bosco Ho <boscoh@gmail.com> (htsutp://boscoh.com)",
+  "author": "Bosco Ho <boscoh@gmail.com> (http://boscoh.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/boscoh/WebGLStarterKit/issues"
