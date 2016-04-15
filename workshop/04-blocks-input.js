@@ -29,6 +29,8 @@ class MyWebGlWidget extends WebGlWidget {
             mesh.scale.y = Math.random() * 2 + 1;
             mesh.scale.z = Math.random() * 2 + 1;
 
+            mesh.initScale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+
             this.scene.add( mesh );
 
             this.clickableMeshes.push( mesh );
@@ -39,6 +41,7 @@ class MyWebGlWidget extends WebGlWidget {
 
         this.moveCameraToShowAll();
 
+        this.keyPress = false;
     }
 
     draw() {
@@ -88,6 +91,33 @@ class MyWebGlWidget extends WebGlWidget {
 
     }
 
+    handleKeypress () {
+
+        this.keyPress = !this.keyPress;
+
+        // let i = 0;
+        // for (let mesh of this.clickableMeshes) {
+        //     if (i % 2 == 0) {
+        //         mesh.visible = !this.keyPress;
+        //     }
+        //     i += 1;
+        // }
+    }
+
+    animate ( elapsedTime, totalElapsedTime ) {
+
+        if (this.keyPress) {
+            let i = 0;
+            for (let mesh of this.clickableMeshes) {
+                if (i % 2 == 0) {
+                    let v = 1 + 0.2 * Math.sin(totalElapsedTime * 0.005);
+                    mesh.scale.set(v*mesh.initScale.x, v*mesh.initScale.y, v*mesh.initScale.z);
+                }
+                i += 1;
+            }
+        }
+    }
+
 }
 
 
@@ -97,5 +127,8 @@ var widget = new MyWebGlWidget('#widget');
 window.addEventListener(
     "resize", () => widget.resize());
 
+document.addEventListener('keydown', function(event) {
+    widget.flipSpheres();
+});
 
 

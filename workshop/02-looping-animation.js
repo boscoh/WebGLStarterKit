@@ -79,6 +79,10 @@ class LoopingAnimation extends WebGlWidget {
         this.torusMesh.position.set(0, 0, 4 + impulse(4, (totalElapsedTime * 0.001) % 3));
         this.sphereMesh.position.set(0, impulse(2, (totalElapsedTime * 0.001 + 1) % 3), 0);
         this.boxMesh.position.set(0, -impulse(2, (totalElapsedTime * 0.001 + 2) % 3), -2);
+
+        // This will distort the sphere in the y direction with the impulse
+        this.sphereMesh.scale.set(1, 1 + 0.3*impulse(2, (totalElapsedTime * 0.001 + 2) % 3), 1);
+
     }
 
 }
