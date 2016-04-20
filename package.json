@@ -1,6 +1,6 @@
 {
   "name": "webglstarterkit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "helper module to setup WebGL apps",
   "main": "webglstarterkit.js",
   "dependencies": {
@@ -26,7 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/boscoh/WebGLStarterKit.git"
   },
-  "author": "Bosco Ho <boscoh@gmail.com> (htsutp://boscoh.com)",
+  "author": "Bosco Ho <boscoh@gmail.com> (http://boscoh.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/boscoh/WebGLStarterKit/issues"
