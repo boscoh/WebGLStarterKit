@@ -2,14 +2,14 @@
 
 "use strict";
 
-var fs = require('fs');
-var path = require('path');
-var browserify = require('browserify');
-var watchify = require('watchify');
-var babelify = require('babelify');
-var cheerio = require('cheerio');
+var fs = require("fs");
+var path = require("path");
+var browserify = require("browserify");
+var watchify = require("watchify");
+var babelify = require("babelify");
+var cheerio = require("cheerio");
 var prettyHtml = require("html");
-let nopt = require('nopt');
+let nopt = require("nopt");
 
 
 let doc = `
@@ -71,7 +71,7 @@ function checkHtml(html, selector, outScript) {
     }
 
     if ( tree( `div[id="${selector}"]`).length === 0 ) {
-        let body = tree( 'body' );
+        let body = tree( "body" );
         if ( body.length === 0 ) {
             root.append("<body>");
             body = tree( "body");
@@ -99,23 +99,28 @@ else {
     const es6Script = remain[0];
 
     var ext = path.extname(es6Script);
-    var base = es6Script.replace(ext, '');
+    var base = es6Script.replace(ext, "");
     var outScript = `${base}.compiled${ext}`;
 
     var html = `${base}.html`;
 
     let selector = "widget";
 
-    if (!fs.existsSync(html)) {
-        console.log( "Creating", outScript, '->', selector, '->', html);
-        buildHtml(html, selector, outScript);
-    }
-    else {
-        console.log( "Checking", outScript, '->', selector, '->', html);
-        checkHtml(html, selector, outScript);
+    var isError = false;
+
+    var success = function() {
+        console.log('success', isError);
+        if (!fs.existsSync(html)) {
+            console.log( "Creating", outScript, "->", selector, "->", html);
+            buildHtml(html, selector, outScript);
+        }
+        else {
+            console.log( "Checking", outScript, "->", selector, "->", html);
+            checkHtml(html, selector, outScript);
+        }
     }
 
-    console.log( es6Script, '->', outScript);
+    console.log( es6Script, "->", outScript);
 
     var plugins = [];
     if (parsed.watch) {
@@ -131,15 +136,22 @@ else {
 
     function bundle() {
         bundler.bundle().pipe(fs.createWriteStream(outScript));
+        success();
     }
 
-    bundler.on('update', bundle);
-    bundler.on('error', (err) => {
-        console.log(err.message);
-        this.emit('end');
-    });
+    bundler.on("update", bundle);
+    // bundler.on("error", (err) => {
+    //     isError = true;
+    //     console.log('exists', fs.existsSync(outScript));
+    //     // console.log(err.message);
+    //     this.emit("end");
+    // });
 
-    bundler.transform(babelify, { presets: "es2015" });
+    try {
+        bundler.transform(babelify, { presets: "es2015" });
+    } catch (e) {
+        console.log("error", e);
+    }
 
     bundle();
 

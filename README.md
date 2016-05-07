@@ -22,7 +22,7 @@ Beyond that, you might also want to:
 
 That's before a single triangle is drawn.
 
-To help you get started, the `WebGLWidget` class wraps all this together with some choice defaults.
+To help you get started, the `WebglWidget` class wraps all this together with some choice defaults.
 
 So you can concentrate on building awesome `three.js` graphics.
 
@@ -53,11 +53,11 @@ Let's create a simple WebGL app `octahedron.js`.
 First import the modules:
 
     import THREE from "three.js";
-    import { WebGlWidget } from "./webglstarterkit.js";
+    import { WebglWidget } from "./webglstarterkit.js";
 
-Then sublcass `WebGLWidget` and add meshes to `this.scene` in the constructor:
+Then sublcass `WebglWidget` and add meshes to `this.scene` in the constructor:
 
-    class MyWidget extends WebGLWidget {
+    class MyWidget extends WebglWidget {
             let material = new THREE.MeshLambertMaterial(
                 { color: 0xffff00 } );
             let geom = new THREE.OctahedronGeometry();
@@ -81,7 +81,7 @@ Now open `octahedron.html`.
 
 # Animation Loop
 
-To allow for the possiblity of multiple widgets in one page, all `WebGLWidget`'s are registered through a single animation loop.
+To allow for the possiblity of multiple widgets in one page, all `WebglWidget`'s are registered through a single animation loop.
 
 The animation loop works through the `registerWidgetForAnimation(widget)` function, which takes any `widget` with the interface:
 
@@ -89,7 +89,7 @@ The animation loop works through the `registerWidgetForAnimation(widget)` functi
 - method `widget.draw()`  - draws at the right time
 - method `widget.animate(timeElapsed)` - animates with the given elapsed time since last animate
 
-The `WebGLWidget` instances will call this automatically, but you can always add your custom objects onto the animation loop.
+The `WebglWidget` instances will call this automatically, but you can always add your custom objects onto the animation loop.
 
 The animation loop is tied to the browser's internal drawing loop, and thus will draw all widgets at the same time.
 
@@ -199,7 +199,7 @@ the PopupText( this.selector, "lightblue", "blue" );
 
 
 
-# WebGlWidget class
+# WebglWidget class
 
 _Constructor:_
 

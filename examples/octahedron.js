@@ -1,8 +1,8 @@
 import THREE from "three";
-import { WebGlWidget } from "../webglstarterkit.js";
+import { WebglWidget } from "../webglstarterkit.js";
 
 
-class MyWebGlWidget extends WebGlWidget {
+class MyWebglWidget extends WebglWidget {
 
     constructor( selector ) {
         super( selector, 'white' );
@@ -24,7 +24,7 @@ class MyWebGlWidget extends WebGlWidget {
 }
 
 
-var widget = new MyWebGlWidget('#widget');
+var widget = new MyWebglWidget('#widget');
 
 window.addEventListener(
     "resize", () => widget.resize());

@@ -322,12 +322,12 @@ var registerWidgetForAnimation = (widget) => {
 
 
 ////////////////////////////////////////////////////////////////////
-// A Starter WebGLWidget to embed in a <div> determined by selector
+// A Starter WebglWidget to embed in a <div> determined by selector
 // Subclass this! Add models and controllers, override
 // input functions, and WebGL construction
 ////////////////////////////////////////////////////////////////////
 
-class WebGlWidget extends Widget {
+class WebglWidget extends Widget {
 
     constructor( selector, backgroundColor=0x000000 ) {
 
@@ -792,7 +792,7 @@ class PopupText {
 
 module.exports = {
     Widget,
-    WebGlWidget,
+    WebglWidget,
     PopupText,
     registerWidgetForAnimation
 }

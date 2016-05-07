@@ -1,8 +1,8 @@
-var { WebGlWidget, PopupText } = require("../webglstarterkit.js");
+var { WebglWidget, PopupText } = require("../webglstarterkit.js");
 var THREE = require("three");
 
 
-class MyWebGlWidget extends WebGlWidget {
+class MyWebglWidget extends WebglWidget {
 
     constructor( selector ) {
 
@@ -92,7 +92,7 @@ class MyWebGlWidget extends WebGlWidget {
 
 
 
-var widget = new MyWebGlWidget('#widget');
+var widget = new MyWebglWidget('#widget');
 
 window.addEventListener(
     "resize", () => widget.resize());
