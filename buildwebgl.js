@@ -119,6 +119,7 @@ let errorString = "";
 
 gulp.task('build', () => {
     console.log( `Bundling and transpiling ${inputScript} to ${outScript}` );
+    isError = false;
     return (
         browserify({entries: inputScript, debug: true})
             .transform(babelify, { presets: "es2015" })
