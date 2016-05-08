@@ -1,4 +1,5 @@
 node_modules
 *.compiled.js
 examples/*.html
+workshop/*.html
 .DS_Store

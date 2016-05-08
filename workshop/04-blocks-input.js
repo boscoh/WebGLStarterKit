@@ -1,8 +1,8 @@
 import THREE from "three";
-import { PopupText, WebglWidget } from "../webglstarterkit.js";
+import { PopupText, WebGlWidget } from "../webglstarterkit.js";
 
 
-class MyWebglWidget extends WebglWidget {
+class MyWebGlWidget extends WebGlWidget {
 
     constructor( selector ) {
 
@@ -29,6 +29,8 @@ class MyWebglWidget extends WebglWidget {
             mesh.scale.y = Math.random() * 2 + 1;
             mesh.scale.z = Math.random() * 2 + 1;
 
+            mesh.initScale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+
             this.scene.add( mesh );
 
             this.clickableMeshes.push( mesh );
@@ -38,6 +40,9 @@ class MyWebglWidget extends WebglWidget {
         this.hover = new PopupText( this.selector, "lightblue", "blue" );
 
         this.moveCameraToShowAll();
+
+        this.showBoxes = true;
+        this.pulseBoxes = false;
 
     }
 
@@ -88,14 +93,51 @@ class MyWebglWidget extends WebglWidget {
 
     }
 
+    handleKeypress (event) {
+
+        if (event.keyCode == 32) {
+            this.showBoxes = !this.showBoxes;
+        } else if (event.keyCode == 13) {
+            this.pulseBoxes = !this.pulseBoxes;
+        }
+
+        this.clickableMeshes.forEach((mesh, i) => {
+            if (i % 2 == 0) {
+                mesh.visible = this.showBoxes;
+            }
+        });
+    }
+
+    animate ( elapsedTime, totalElapsedTime ) {
+
+        if (this.pulseBoxes) {
+            this.clickableMeshes.forEach((mesh, i) => {
+                if (i % 2 == 1) {
+                    let a = 1 + 0.2 * Math.sin(totalElapsedTime * 0.005);
+                    let v = new THREE.Vector3().copy(mesh.initScale);
+                    mesh.scale.copy(v.multiplyScalar(a));
+                }
+            });
+        }
+
+        if ( this.clickedMesh ) {
+            let mesh = this.clickedMesh;
+            let a = 1 + 0.3 * Math.sin(2* totalElapsedTime * 0.005);
+            let v = new THREE.Vector3().copy(mesh.initScale);
+            mesh.scale.copy(v.multiplyScalar(a));
+        }
+
+    }
+
 }
 
 
-
-var widget = new MyWebglWidget('#widget');
+var widget = new MyWebGlWidget('#widget');
 
 window.addEventListener(
     "resize", () => widget.resize());
 
+document.addEventListener(
+    'keydown', (e) => widget.handleKeypress(e));
 
 
