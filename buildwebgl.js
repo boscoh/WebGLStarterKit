@@ -32,9 +32,30 @@ display the WebGL graphics.
 `;
 
 
+function fileExists(filePath)
+{
+    try
+    {
+        return fs.statSync(filePath).isFile();
+    }
+    catch (err)
+    {
+        return false;
+    }
+}
+
+function writePrettyHtml(html, htmlText) {
+    fs.writeFile(
+        html,
+        prettyHtml.prettyPrint(
+            htmlText,
+            { indent_size: 2 }
+        )
+    );
+}
+
 function buildHtml(html, selector, outScript) {
     let outScriptBase = path.basename(outScript);
-
     let htmlText =
         `<html>
     <head>
@@ -51,16 +72,8 @@ function buildHtml(html, selector, outScript) {
     </body>
     <script src="${outScriptBase}"></script>
     </html>`;
-
-    fs.writeFile(
-        html,
-        prettyHtml.prettyPrint(
-            htmlText,
-            { indent_size: 2 }
-        )
-    );
+    writePrettyHtml(html, htmlText);
 }
-
 
 function buildErrorHtml(html, errorString) {
     let htmlText =
@@ -80,14 +93,7 @@ function buildErrorHtml(html, errorString) {
         </div>
     </body>
     </html>`;
-
-    fs.writeFile(
-        html,
-        prettyHtml.prettyPrint(
-            htmlText,
-            { indent_size: 2 }
-        )
-    );
+    writePrettyHtml(html, htmlText);
 }
 
 let knownOpts = { "watch": [Boolean, false], "debug": [Boolean, false] };
@@ -110,13 +116,15 @@ let isError = false;
 let errorString = "";
 
 gulp.task('build-js', () => {
-    console.log( `Building ${inputScript} to ${outScript}` );
+    if (!fileExists(inputScript)) {
+        return;
+    }
     isError = false;
     return (
         browserify({entries: inputScript, debug: parsed.debug})
             .transform(babelify, { presets: "es2015" })
             .bundle()
-            .on('error', (error) => {
+            .on('error', function(error) {
                 isError = true;
                 errorString = error.toString();
                 this.emit('end');
@@ -127,10 +135,12 @@ gulp.task('build-js', () => {
 });
 
 gulp.task('build-html', ['build-js'], () => {
-    if (!isError) {
+    if (!fileExists(inputScript)) {
+        console.log(`Couldn't find ${outScript}`);
+    } else if (!isError) {
         console.log(`Made ${outScript}`);
         buildHtml(html, selector, outScript);
-        console.log(`Made ${html} linking ${outScript} to #${selector}`);
+        console.log(`Made ${html} that binds ${outScript} to #${selector}`);
     } else {
         console.log(`Could not build ${outScript}`);
         console.log(errorString);
