@@ -9,10 +9,10 @@ is 1) moving it 2) rotating it around a point.
 
 // First we need to import three.js module and the webgl starter kit
 import THREE from "three";
-import { WebGlWidget } from "../webglstarterkit.js";
+import { WebglWidget } from "../webglstarterkit.js";
 
-// Let's declare a class and extend `WebGlWidget`, and define its constructor.
-class LoopingAnimation extends WebGlWidget {
+// Let's declare a class and extend `WebglWidget`, and define its constructor.
+class LoopingAnimation extends WebglWidget {
 
     constructor ( selector, backgroundColor=0x112244 ) {
 

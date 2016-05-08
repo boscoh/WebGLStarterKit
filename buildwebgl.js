@@ -26,6 +26,8 @@ usage: buildwebgl.js [--watch -w] sample.js
  --watch - watchify mode, run continuously, and recompile if sample.js
            has changed
 
+ --debug - write out source-map for debugging
+
 Will compile downto sample.compiled.js and create sample.html that will
 display the WebGL graphics.
 `;
@@ -89,14 +91,8 @@ function buildErrorHtml(html, errorString) {
     );
 }
 
-function swallowError (error) {
-    isError = true;
-    errorString = error.toString();
-    this.emit('end');
-}
-
-let knownOpts = { "watch": [Boolean, false] };
-let shortHands = { "w": ["--watch"] };
+let knownOpts = { "watch": [Boolean, false], "debug": [Boolean, false] };
+let shortHands = { "w": ["--watch"], "d": ["--debug"] };
 let parsed = nopt(knownOpts, shortHands, process.argv, 2);
 let remain = parsed.argv.remain;
 
@@ -110,47 +106,41 @@ const ext = path.extname(inputScript);
 const base = inputScript.replace(ext, "");
 const outScript = `${base}.compiled${ext}`;
 const html = `${base}.html`;
-
 const selector = "widget";
-
 let isError = false;
 let errorString = "";
 
-
-gulp.task('build', () => {
-    console.log( `Bundling and transpiling ${inputScript} to ${outScript}` );
+gulp.task('build-js', () => {
+    console.log( `Building ${inputScript} to ${outScript}` );
     isError = false;
     return (
-        browserify({entries: inputScript, debug: true})
+        browserify({entries: inputScript, debug: parsed.debug})
             .transform(babelify, { presets: "es2015" })
             .bundle()
-            .on('error', swallowError)
+            .on('error', (error) => {
+                isError = true;
+                errorString = error.toString();
+                this.emit('end');
+            })
             .pipe(source(outScript))
             .pipe(gulp.dest('.'))
     );
 });
 
-gulp.task('make-html', ['build'], () => {
+gulp.task('build-html', ['build-js'], () => {
     if (!isError) {
-        console.log("Succesfully made", outScript);
-        console.log(
-            `Creating ${html} with elemnt #${selector} for ${outScript}`);
+        console.log(`Made ${outScript}`);
         buildHtml(html, selector, outScript);
+        console.log(`Made ${html} linking ${outScript} to #${selector}`);
     } else {
-        console.log(`Error in building ${outScript}`);
+        console.log(`Could not build ${outScript}`);
+        console.log(errorString);
         buildErrorHtml(html, errorString);
     }
 });
 
+gulp.start('build-html');
 if (parsed.watch) {
-    gulp.task(
-        'watch',
-        ['build', 'make-html'],
-        () => {
-            gulp.watch(inputScript, ['make-html']);
-        });
-    gulp.start('watch');
-} else {
-    gulp.start(['build', 'make-html']);
+    gulp.watch(inputScript, ['build-html']);
 }
 

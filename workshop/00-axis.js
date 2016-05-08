@@ -28,18 +28,18 @@
 
 // First we need to import three.js module and the webgl starter kit
 import THREE from "three";
-import { WebGlWidget } from "../webglstarterkit.js";
+import { WebglWidget } from "../webglstarterkit.js";
 
 /*
- `THREE` is now available for us to use `three.js`. `WebGlWidget` provides
+ `THREE` is now available for us to use `three.js`. `WebglWidget` provides
  a base foundation which we will get into the details later.
 
  We are using ES2015 / ES6 syntax, which you may not have seen before. If you
  haven't, not to worry and just follow along!
  */
 
-// Let's declare a class and extend `WebGlWidget`, and define its constructor.
-class DesignScene extends WebGlWidget {
+// Let's declare a class and extend `WebglWidget`, and define its constructor.
+class AxisScene extends WebglWidget {
 
     constructor ( selector ) {
 
@@ -82,7 +82,7 @@ class DesignScene extends WebGlWidget {
 }
 
 // Instantiate the widget and inserts it into our page.
-var widget = new DesignScene('#widget');
+var widget = new AxisScene('#widget');
 
 // We also bind a callback function so when the browser window resizes, we
 // also resize our widget.
