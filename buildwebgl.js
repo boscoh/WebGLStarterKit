@@ -11,7 +11,6 @@ let browserify = require("browserify");
 let babelify = require("babelify");
 
 let gulp = require('gulp');
-let rename = require("gulp-rename");
 let source = require('vinyl-source-stream');
 let transform = require('vinyl-transform');
 
